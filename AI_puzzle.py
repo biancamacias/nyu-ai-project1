@@ -15,11 +15,27 @@ class Node:
       self.hValue = 0
       self.fValue = 0
 
-# Function to calulate f(n)
-def calcF(state, goalState, wValue):
-    None
-    # Code to calulate f(n)
+# individual h(n) for each tile
+def individualH(elem, row, col, goalState):
+    total = 0
+    for line in goalState:
+        if elem in line:
+            goalRow = goalState.index(line)
+            goalCol = line.index(elem)
+            total = abs(goalRow - row) + abs(goalCol - col)
+    return total
+            
 
+# Function to calulate f(n)
+# Currenly only h(n), but the h(n) is correct 
+# Need to keep track of g(n)
+def calcF(currState, goalState, wValue):
+    hValue = 0
+    for line in currState:
+        for elem in line:
+            hValue += individualH(elem, currState.index(line), line.index(elem), goalState)
+    hValue *= wValue
+    return int(hValue)
 
 
 def move(empty, state, rowLoc, colLoc, wValue, goalState):
@@ -45,8 +61,7 @@ def move(empty, state, rowLoc, colLoc, wValue, goalState):
         right = Node(state[right][rowLoc])
         empty.right = right
 
-    
-    
+
 
 def main ():
     # open the file
@@ -79,7 +94,8 @@ def main ():
     # maybe while loop
     # while state!=goalState:
     empty = Node((state[rowLoc][colLoc]))
-    move(Node, state, rowLoc, colLoc, wValue, goalState)
+    theF = calcF(state, goalState, wValue)
+    move(empty, state, rowLoc, colLoc, wValue, goalState)
 
 
     
