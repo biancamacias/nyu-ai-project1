@@ -3,7 +3,7 @@
 By Isabel Huey and Bianca Macias
 Project 1, coded in Python
 
-# How to create a new branch via command line
+## How to create a new branch via command line
 
 1. Make sure you are in the main branch.
  ```
@@ -15,7 +15,7 @@ $ git checkout -b [branch name]
 ```
 3. Start working on your new branch!
 
-# How to commit changes
+## How to commit changes
 
 NOTE: commit often!
 
@@ -33,7 +33,7 @@ $ git add [filename]
 $ git commit -m "fixed bug in function loop"
 ```
 
-# How to push changes after you've committed.
+## How to push changes after you've committed
 
 1. If you've never pushed to the repo, first set upstream to origin.
 ```
