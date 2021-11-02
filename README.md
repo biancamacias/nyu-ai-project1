@@ -44,3 +44,30 @@ $ git push --set-upstream origin [current branch name]
 ```
 $ git push
 ```
+
+## How to work on someone else's branch
+
+1. Checkout to main branch
+```
+$ git checkout main
+```
+
+2. Fetch all branches
+```
+$ git fetch origin
+```
+
+3. List all branches to find the remote branch you want to work on.
+```
+$ git branch -a
+```
+
+4. Make a copy of the branch that you can work on.
+```
+$ git checkout -b [branch name] origin/[branch name]
+```
+
+5. Pull changes they push to keep your copy of their branch always up to date.
+```
+$ git pull
+```
