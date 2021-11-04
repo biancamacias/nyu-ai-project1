@@ -20,7 +20,7 @@ def individualH(elem, row, col, goalState):
             goalCol = line.index(elem)
             total = abs(goalRow - row) + abs(goalCol - col)
     return total
-            
+
 
 # Function to calulate f(n)
 # Currenly only h(n)
@@ -32,20 +32,20 @@ def calcF(currState, goalState, wValue):
     hValue *= wValue
     return int(hValue)
 
-# create helper fucnction can if can move in each direction 
-
-# create helper function to check if it is a repeated state 
+# create helper fucnction can if can move in each direction
+#here is a comment
+# create helper function to check if it is a repeated state
 
 def move(empty, state, rowLoc, colLoc, wValue, goalState):
     # Need to check if there is a tile in each direction around empty tile space
     up = rowLoc - 1
     down = rowLoc + 1
     left = colLoc + 1
-    right = colLoc -1 
+    right = colLoc -1
 
-    # Check if there is a value to move for each direction then create a node 
+    # Check if there is a value to move for each direction then create a node
     # Call function to calculate new f(n) for each node
-    # Need to update state and keep count of nodes 
+    # Need to update state and keep count of nodes
     if (0<up<len(state)):
         up = Node(state[up][colLoc])
     if (0<down<len(state)):
@@ -82,9 +82,9 @@ def main ():
         if '0' in line:
             colLoc = line.index('0')
             rowLoc = state.index(line)
-    
+
     goalState = tempList[4:8]
-    
+
     # maybe while loop
     # while state!=goalState:
     # add g counter in while loop
