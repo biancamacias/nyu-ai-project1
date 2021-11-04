@@ -4,10 +4,7 @@ class Node:
    def __init__(self, data=0, gValue=0, hValue=0, fValue=0):
       self.data = data
 
-      self.left = None
-      self.right = None
-      self.up = None
-      self.down = None
+      self.parent = None
 
       self.direction = None
 
@@ -15,7 +12,6 @@ class Node:
       self.hValue = 0
       self.fValue = 0
 
-# individual h(n) for each tile
 def individualH(elem, row, col, goalState):
     total = 0
     for line in goalState:
@@ -27,8 +23,7 @@ def individualH(elem, row, col, goalState):
             
 
 # Function to calulate f(n)
-# Currenly only h(n), but the h(n) is correct 
-# Need to keep track of g(n)
+# Currenly only h(n)
 def calcF(currState, goalState, wValue):
     hValue = 0
     for line in currState:
@@ -37,6 +32,9 @@ def calcF(currState, goalState, wValue):
     hValue *= wValue
     return int(hValue)
 
+# create helper fucnction can if can move in each direction 
+
+# create helper function to check if it is a repeated state 
 
 def move(empty, state, rowLoc, colLoc, wValue, goalState):
     # Need to check if there is a tile in each direction around empty tile space
@@ -50,16 +48,12 @@ def move(empty, state, rowLoc, colLoc, wValue, goalState):
     # Need to update state and keep count of nodes 
     if (0<up<len(state)):
         up = Node(state[up][colLoc])
-        empty.up = up 
     if (0<down<len(state)):
         down = Node(state[down][colLoc])
-        empty.down = down 
     if (0<left<len(state[0])):
         left = Node(state[left][rowLoc])
-        empty.left = left 
     if (0<right<len(state[0])):
         right = Node(state[right][rowLoc])
-        empty.right = right
 
 
 
@@ -93,11 +87,10 @@ def main ():
     
     # maybe while loop
     # while state!=goalState:
+    # add g counter in while loop
     empty = Node((state[rowLoc][colLoc]))
     theF = calcF(state, goalState, wValue)
     move(empty, state, rowLoc, colLoc, wValue, goalState)
 
-
-    
     file.close()
 main()
