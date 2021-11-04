@@ -7,7 +7,7 @@ Project 1, coded in Python
 
 1. Make sure you are in the main branch.
  ```
- $ git checkout master
+ $ git checkout main
  ```
 2. Create new branch (which is branched off of main).
 ```
