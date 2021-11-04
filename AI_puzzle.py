@@ -2,36 +2,40 @@
 # Isabel Huey, Bianca Macias
 # ijh234, bm2815
 
+WEIGHTS = [1, 1.2, 1.4]
+
 # graph search will use this Node data structure throughout
 class Node:
-   def __init__(self, data = 0, g = 0, goal_state, weight):
-      self.data = data # list, current state of puzzle
+   def __init__(self, state = 0, g = 0, goal_state, weight):
+      self.state = state # list, current state of puzzle
       self.parent = None # None if root, must be another node otherwise
       self.direction = None # TODO: maybe don't need this? we'll see
 
       self.g = g # node level
       self.h = self.calculate_h(goal_state) # Manhattan distances from goal state
-      self.f = self.calculate_f(goal_state, weight) # f(n) = g(n) + h(n)
+      self.f = self.calculate_f(weight) # f(n) = weight * h(n) + g(n)
 
-    def calculate_h(self, goal_state): # TODO: fix this
+    def calculate_h(self, goal_state):
         # calculates manhattan distances of curr state from goal state
         total = 0
-        for row in goal_state:
-            if elem in line:
-                goalRow = goal_state.index(row)
-                goalCol = row.index(elem)
-                total = abs(goalRow - row) + abs(goalCol - col)
+        for goal_row in range(0,3):
+            for goal_column in range(0,4):
+                goal_element = goal_state[goal_row][goal_column]
+                curr_row, curr_column = find_element(goal_element)
+                total += abs(goal_row - curr_row) + abs(goal_column - curr_column)
         return total
 
-    # Function to calulate f(n)
-    # Currenly only h(n)
-    def calculate_f(self, goal_state, weight): # TODO: fix this
-        hValue = 0
-        for line in currState:
-            for elem in line:
-                hValue += individualH(elem, currState.index(line), line.index(elem), goalState)
-        hValue *= wValue
-        return int(hValue)
+    def find_element(self, element):
+        # finds row, column of element in the current state
+        # returns tuple of its location (row, column)
+        for row in range(0, 4):
+            for column in range(0,5):
+                if self.state[row][column] == element:
+                    return row, column
+
+    def calculate_f(self, weight):
+        # calculates f value
+        return weight * self.h + self.g
 
 # create helper fucnction can if can move in each direction
 
@@ -58,10 +62,10 @@ def move(empty, state, rowLoc, colLoc, wValue, goalState):
 
 
 
-def main ():
+def main():
     # open the file
     file = open("AI_puzzle_test.txt", "r")
-    w_value = 1.0 # TODO: change this
+    weight = 1.0 # TODO: change this
 
     # puzzle list data structure: [[row 1], [row 2], [row 3]]
     initial_state = [] # initial state of puzzle
@@ -70,6 +74,7 @@ def main ():
     index = 0
     states_created = [] # list to hold states already created
     breat_at = 0 # TODO: do we use this?
+    g = 0 # g(n) value, root starts at
 
     # Make a list
     for line in file:
@@ -90,11 +95,13 @@ def main ():
 
     # maybe while loop
     # while state!=goalState:
+    # check if initial state == goal state, then loop
     # add g counter in while loop
     # create root, then loop to create children
-    root = Node(curr_state, 0) # TODO: data in node should be whole table
-    f_value = calcF(curr_state, goal_state, w_value) # use g value
-    move(empty, curr_state, rowLoc, colLoc, w_value, goal_state) # put this into a loop
+    root = Node(curr_state, 0, goal_state, weight) # TODO: data in node should be whole table
+    move(empty, curr_state, rowLoc, colLoc, weight, goal_state) # put this into a loop
 
     file.close()
-main()
+
+if __name__ == '__main__':
+    main()
