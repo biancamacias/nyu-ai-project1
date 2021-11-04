@@ -78,17 +78,18 @@ def main ():
     curr_state = initial_state[0:3]
 
     # find initial position of empty tile
-    for line in curr_state:
+    for row in curr_state:
         if '0' in line:
-            colLoc = line.index('0')
-            rowLoc = state.index(line)
+            colLoc = row.index('0')
+            rowLoc = curr_state.index(row)
 
     goal_state = initial_state[4:8]
 
     # maybe while loop
     # while state!=goalState:
     # add g counter in while loop
-    empty = Node((curr_state[rowLoc][colLoc]))
+    # create root, then loop to create children
+    root = Node((curr_state[rowLoc][colLoc]))
     f_value = calcF(curr_state, goal_state, w_value)
     move(empty, curr_state, rowLoc, colLoc, w_value, goal_state)
 
