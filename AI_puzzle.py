@@ -158,6 +158,7 @@ def main():
             goal_reached = True
         else:
             direction, next_node = move(curr_best_node, g, generated_states)
+            optimal_path.append(direction)
             curr_best_node = next_node
 
     file.close()
