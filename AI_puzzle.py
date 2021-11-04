@@ -83,7 +83,7 @@ def main ():
             colLoc = line.index('0')
             rowLoc = state.index(line)
 
-    goal_state = tempList[4:8]
+    goal_state = initial_state[4:8]
 
     # maybe while loop
     # while state!=goalState:
