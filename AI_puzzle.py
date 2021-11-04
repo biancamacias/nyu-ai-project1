@@ -66,7 +66,7 @@ def main ():
     state = []
     goal_state = []
     index = 0
-    breat_at = 0
+    breat_at = 0 # TODO: do we use this?
 
     # Make a list
     for line in file:
@@ -89,9 +89,9 @@ def main ():
     # while state!=goalState:
     # add g counter in while loop
     # create root, then loop to create children
-    root = Node((curr_state[rowLoc][colLoc]))
-    f_value = calcF(curr_state, goal_state, w_value)
-    move(empty, curr_state, rowLoc, colLoc, w_value, goal_state)
+    root = Node((curr_state[rowLoc][colLoc])) # TODO: data in node should be whole table
+    f_value = calcF(curr_state, goal_state, w_value) # use g value
+    move(empty, curr_state, rowLoc, colLoc, w_value, goal_state) # put this into a loop
 
     file.close()
 main()
