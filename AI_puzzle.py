@@ -20,6 +20,7 @@ class Node:
 
     def calculate_h(self, goal_state):
         # calculates manhattan distances of curr state from goal state
+        # sets h value
         total = 0
         for goal_row in range(0,3):
             for goal_column in range(0,4):
@@ -29,8 +30,7 @@ class Node:
         self.h = total
 
     def calculate_f(self, weight):
-        # calculates f value
-        # returns f value
+        # calculates and sets f value
         self.f = weight * self.h + self.g
 
     def find_element(self, element):
