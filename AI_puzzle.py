@@ -117,7 +117,6 @@ def move(node, g, generated_states):
 
     return best_node(child_nodes)
 
-
 def main():
     # open the file
     file = open("AI_puzzle_test.txt", "r")
