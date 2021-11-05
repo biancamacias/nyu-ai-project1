@@ -70,11 +70,11 @@ def move_right(node, g):
     # TODO: helper function that takes current node and creates new node where tile moves right
     # returns new node with node as its parent
 
-def generate_children(node, new_up, new_down, new_left, new_right, generated_states):
+def generate_children(node, generated_states):
     # helper function that generates valid children based on directions they can move in
     # if new child state has already been generated before, skip it (no repeated states allowed)
     # if not, add to generated_states and children list
-    # returns children
+    # returns children list
     # value of children will be None if direction is not allowed
     new_up = None
     new_down = None
@@ -125,7 +125,7 @@ def main():
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
     initial_state = [] # initial state of puzzle
     goal_state = [] # will hold goal state, input from input file
-    generated_states = [] # list to hold nodes already created to prevent repeated states
+    generated_states = [] # list to hold states already created to prevent repeated states
     g = 0 # g(n) value, root starts at 0
     optimal_path = [] # list of directions taken
 
