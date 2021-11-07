@@ -1,6 +1,7 @@
 # artificial intelligence project 1
 # Isabel Huey, Bianca Macias
 # ijh234, bm2815
+import copy
 
 WEIGHTS = [1.0, 1.2, 1.4]
 DIRECTIONS = ["UP", "DOWN", "LEFT", "RIGHT"]
@@ -10,6 +11,7 @@ class Node:
    def __init__(self, weight, goal_state, state, g = 0):
       self.state = state # list, current state of puzzle
       self.parent = None # None if root, must be another node otherwise
+      self.weight = weight
 
       self.g = g # node level
       self.h = 0 # manhattan distances from goal state, will be 0 when goal is reached
@@ -18,23 +20,27 @@ class Node:
       self.calculate_h(goal_state)
       self.calculate_f(weight)
 
-   def find_element(self, element):
+   def manhattan_distance(self, goal_row, goal_column, curr_row, curr_column):
+       return abs(goal_row - curr_row) + abs(goal_column - curr_column)
+
+   def find_element(self, goal_element):
         # finds row, column of element in the current state
         # returns tuple of its location (row, column)
-        for row in range(0, 3):
-            for column in range(0,4):
-                if self.state[row][column] == element:
-                    return row, column
+        for row in self.state:
+            for element in row:
+                if element == goal_element:
+                    row_index = self.state.index(row)
+                    col_index = row.index(element)
+                    return row_index, col_index
 
    def calculate_h(self, goal_state):
         # calculates manhattan distances of curr state from goal state
         # sets h value
         total = 0
-        for goal_row in range(0,3):
-            for goal_column in range(0,4):
-                goal_element = goal_state[goal_row][goal_column]
+        for goal_row in goal_state:
+            for goal_element in goal_row:
                 curr_row, curr_column = self.find_element(goal_element)
-                total += abs(goal_row - curr_row) + abs(goal_column - curr_column)
+                total += self.manhattan_distance(goal_state.index(goal_row), goal_row.index(goal_element), curr_row, curr_column)
         self.h = total
 
    def calculate_f(self, weight):
@@ -89,32 +95,49 @@ class Node:
 
 
 def best_node(child_nodes):
-    None
+    for node in child_nodes:
+        if node!=None:
+            print(node.f)
+    return (child_nodes[1])
     # TODO: create helper function to decide which child node is best based on f value
     # returns tuple (direction, node with lowest f value)
 
-def move_up(node, g):
-    None
+# def move_up(node, g):
+#     None
     # TODO: helper function that takes current node and creates new node where tile moves up
     # returns new node with node as its parent
 
-def move_down(node, g):
-    None
+def move(node, direction, g, empty_tile, goal_state):
     # TODO: helper function that takes current node and creates new node where tile moves down
     # returns new node with node as its parent
+    new_state = copy.deepcopy(node.state)
+    weight = node.weight
+    (row, col) = empty_tile
+    if (direction[0] == "UP") | (direction[0] == "DOWN"):
+        new_row = direction[1]
+        new_state[row][col] = new_state[new_row][col]
+        new_state[new_row][col] = '0'
+    else:
+        new_col = direction[1]
+        new_state[row][col] = new_state[row][new_col]
+        new_state[row][new_col] = '0'
+    new_node = Node(weight, goal_state, new_state, g = 0)
+    new_node.parent = node.state
+    return new_node
 
-def move_left(node, g):
-    None
+
+# def move_left(node, g):
+#     None
     # TODO: helper function that takes current node and creates new node where tile moves left
     # returns new node with node as its parent
 
-def move_right(node, g):
-    None
+# def move_right(node, g):
+#     None
     # TODO: helper function that takes current node and creates new node where tile moves right
     # returns new node with node as its parent
 
 
-def generate_children(node, generated_states):
+def generate_children(node, g, generated_states, goal_state):
     # helper function that generates valid children based on directions they can move in
     # if new child state has already been generated before, skip it (no repeated states allowed)
     # if not, add to generated_states and children list
@@ -125,39 +148,44 @@ def generate_children(node, generated_states):
     new_left = None
     new_right = None
     empty_tile = node.find_empty_tile()
+    (row, col) = empty_tile
     if node.move_possible(DIRECTIONS[0], empty_tile):
-        new_up = move_up(node, g)
+        direction = (DIRECTIONS[0], row - 1)
+        new_up = move(node, direction, g, empty_tile, goal_state)
         if new_up.state not in generated_states:
             generated_states.append(new_up.state)
         else:
             new_up = None
     if node.move_possible(DIRECTIONS[1], empty_tile):
-        new_down = move_down(node, g)
+        direction = (DIRECTIONS[1], row + 1)
+        new_down = move(node, direction, g, empty_tile, goal_state)
         if new_down.state not in generated_states:
             generated_states.append(new_down.state)
         else:
             new_down = None
     if node.move_possible(DIRECTIONS[2], empty_tile):
-        new_left = move_left(node, g)
+        direction = (DIRECTIONS[2], col + 1)
+        new_left = move(node, direction, g, empty_tile, goal_state)
         if new_left.state not in generated_states:
             generated_states.append(new_left.state)
         else:
             new_left = None
     if node.move_possible(DIRECTIONS[3], empty_tile):
-        new_right = move_right(node, g)
+        direction = (DIRECTIONS[3], col - 1)
+        new_right = move(node, direction, g, empty_tile, goal_state)
         if new_right.state not in generated_states:
             generated_states.append(new_right.state)
         else:
             new_right = None
     return [new_up, new_down, new_left, new_right]
 
-def move(node, g, generated_states):
+def best_move(node, g, generated_states, goal_state):
     # creates nodes if empty tile can move up, down, left, right
     # and if the node has not yet been created
     # sets child node parent to node
     # returns tuple (direction taken, node with best f acc to A* search)
 
-    child_nodes = generate_children(node, generated_states)
+    child_nodes = generate_children(node, g, generated_states, goal_state)
     # [up node or None, down node or None, left node or None, right node or None]
 
     return best_node(child_nodes)
@@ -193,9 +221,11 @@ def main():
     curr_best_node = root
     while curr_best_node.state != goal_state:
         g += 1
-        direction, next_node = move(curr_best_node, g, generated_states)
+        direction, next_node = best_move(curr_best_node, g, generated_states, goal_state)
+        print(direction, next_node)
         optimal_path.append(direction)
         curr_best_node = next_node
+        print(curr_best_node)
     # while !(goal_reached):
         # g += 1
         # if curr_best_node.state == goal_state:
