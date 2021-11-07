@@ -45,7 +45,8 @@ class Node:
 
    def calculate_f(self, weight):
         # calculates and sets f value
-        self.f = weight * self.h + self.g
+        # self.f = weight * self.h + self.g
+        self.f = self.h + self.g
 
 
 
@@ -54,12 +55,12 @@ class Node:
        # returns tuple (row, column)
        # find initial position of empty tile
        for row in self.state:
-           for col in row:
-               if '0' in col:
-                   colLoc = row.index('0')
-                   rowLoc = self.state.index(row)
-                   return(rowLoc, colLoc)
-           else: print("Error: Cannot find empty tile")
+           for element in row:
+               if element == '0':
+                   col = row.index('0')
+                   row = self.state.index(row)
+                   return(row, col)
+       print("Error: Cannot find empty tile")
 
 
    def move_possible(self, direction, empty_tile):
@@ -95,12 +96,21 @@ class Node:
 
 
 def best_node(child_nodes):
-    for node in child_nodes:
-        if node!=None:
-            print(node.f)
-    return (child_nodes[1])
     # TODO: create helper function to decide which child node is best based on f value
     # returns tuple (direction, node with lowest f value)
+    min_f = -1
+    direction_moved = None
+    node_choosen = None
+    for node in child_nodes:
+        direction = node[0]
+        node = node[1]
+        if node!=None:
+            if (min_f == -1) | (node.f < min_f):
+                min_f = node.f
+                direction_moved = direction
+                node_choosen = node
+    return (direction_moved, node_choosen)
+
 
 # def move_up(node, g):
 #     None
@@ -121,7 +131,7 @@ def move(node, direction, g, empty_tile, goal_state):
         new_col = direction[1]
         new_state[row][col] = new_state[row][new_col]
         new_state[row][new_col] = '0'
-    new_node = Node(weight, goal_state, new_state, g = 0)
+    new_node = Node(weight, goal_state, new_state, g)
     new_node.parent = node.state
     return new_node
 
@@ -177,17 +187,15 @@ def generate_children(node, g, generated_states, goal_state):
             generated_states.append(new_right.state)
         else:
             new_right = None
-    return [new_up, new_down, new_left, new_right]
+    return [("UP", new_up), ("DOWN", new_down), ("LEFT", new_left), ("RIGHT", new_right)]
 
 def best_move(node, g, generated_states, goal_state):
     # creates nodes if empty tile can move up, down, left, right
     # and if the node has not yet been created
     # sets child node parent to node
     # returns tuple (direction taken, node with best f acc to A* search)
-
     child_nodes = generate_children(node, g, generated_states, goal_state)
     # [up node or None, down node or None, left node or None, right node or None]
-
     return best_node(child_nodes)
 
 def main():
@@ -219,13 +227,19 @@ def main():
     generated_states.append(root.state)
     # goal_reached = False
     curr_best_node = root
-    while curr_best_node.state != goal_state:
+    while (curr_best_node!= None) & (curr_best_node.state != goal_state):
         g += 1
         direction, next_node = best_move(curr_best_node, g, generated_states, goal_state)
-        print(direction, next_node)
         optimal_path.append(direction)
         curr_best_node = next_node
-        print(curr_best_node)
+        if (curr_best_node!= None):
+            print("Current State: ")
+            for line in curr_best_node.state:
+                print(line)
+            print("f:")
+            print(curr_best_node.f)
+        else:
+            break
     # while !(goal_reached):
         # g += 1
         # if curr_best_node.state == goal_state:
