@@ -84,12 +84,12 @@ class Node:
                 return True
             else: return False
         if direction == "LEFT":
-            left = col + 1
+            left = col - 1
             if min_col < left < max_col :
                 return True
             else: return False
         if direction == "RIGHT":
-            right = col -1
+            right = col + 1
             if min_col < right < max_col :
                 return True
             else: return False
@@ -174,14 +174,14 @@ def generate_children(node, g, generated_states, goal_state):
         else:
             new_down = None
     if node.move_possible(DIRECTIONS[2], empty_tile):
-        direction = (DIRECTIONS[2], col + 1)
+        direction = (DIRECTIONS[2], col - 1)
         new_left = move(node, direction, g, empty_tile, goal_state)
         if new_left.state not in generated_states:
             generated_states.append(new_left.state)
         else:
             new_left = None
     if node.move_possible(DIRECTIONS[3], empty_tile):
-        direction = (DIRECTIONS[3], col - 1)
+        direction = (DIRECTIONS[3], col + 1)
         new_right = move(node, direction, g, empty_tile, goal_state)
         if new_right.state not in generated_states:
             generated_states.append(new_right.state)
@@ -196,6 +196,12 @@ def best_move(node, g, generated_states, goal_state):
     # returns tuple (direction taken, node with best f acc to A* search)
     child_nodes = generate_children(node, g, generated_states, goal_state)
     # [up node or None, down node or None, left node or None, right node or None]
+    for node in child_nodes:
+        print(node[0])
+        if node[1]!= None:
+            print(node[1].state)
+        else: print(None)
+        print("\n")
     return best_node(child_nodes)
 
 def main():
@@ -227,19 +233,20 @@ def main():
     generated_states.append(root.state)
     # goal_reached = False
     curr_best_node = root
-    while (curr_best_node!= None) & (curr_best_node.state != goal_state):
+    #while (curr_best_node!= None) & (curr_best_node.state != goal_state):
+    while g < 5:
         g += 1
         direction, next_node = best_move(curr_best_node, g, generated_states, goal_state)
         optimal_path.append(direction)
         curr_best_node = next_node
-        if (curr_best_node!= None):
-            print("Current State: ")
-            for line in curr_best_node.state:
-                print(line)
-            print("f:")
-            print(curr_best_node.f)
-        else:
-            break
+        # if (curr_best_node!= None):
+        #     print("Current State: ")
+        #     for line in curr_best_node.state:
+        #         print(line)
+        #     print("f:")
+        #     print(curr_best_node.f)
+        # else:
+        #     break
     # while !(goal_reached):
         # g += 1
         # if curr_best_node.state == goal_state:
