@@ -141,7 +141,7 @@ def move(node, direction, g, empty_tile, goal_state):
         new_col = direction[1]
         new_state[row][col] = new_state[row][new_col]
         new_state[row][new_col] = '0'
-    new_node = Node(weight, goal_state, new_state, g)
+    new_node = Node(weight, goal_state, new_state, None, g)
     new_node.parent = node
     return new_node
 
@@ -207,14 +207,14 @@ def best_move(node, g, generated_states, goal_state, unexpanded_nodes):
     #     print("\n")
     return best_node(child_nodes, unexpanded_nodes)
 
-def output(best_path, initial_input, weight, g):
+def output(best_path, curr_best_node, initial_input, weight, g):
     for line in initial_input:
         for elem in line:
             print(elem, end=" ")
         print()
     print()
     print(weight)
-    print(g)
+    print(curr_best_node.g)
     print("N")
     for node in best_path:
         print(node.direction, end=" ")
@@ -236,7 +236,7 @@ def main():
     initial_input = [] # initial state of puzzle
     goal_state = [] # will hold goal state, input from input file
     generated_states = [] # list to hold states already created to prevent repeated states
-    g = 0 # g(n) value, root starts at 0
+    g = 1 # g(n) value, root starts at 0
     optimal_path = [] # list of directions taken
 
     # Make a list
@@ -259,12 +259,16 @@ def main():
     unexpanded_nodes = []
     best_path =[]
     while (curr_best_node!= None) & (curr_best_node.state != goal_state):
-        g += 1
         next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
         # optimal_path.append(direction)
         curr_best_node = next_node
+        for node in best_path:
+            if node.g >= curr_best_node.g:
+                best_path.remove(node)
+
+        g = curr_best_node.g + 1
         best_path.append(curr_best_node)
-    output(best_path, initial_input, weight, g)
+    output(best_path, curr_best_node, initial_input, weight, g)
 
 
     file.close()
