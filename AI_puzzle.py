@@ -263,15 +263,15 @@ def main():
     curr_best_node = root
     unexpanded_nodes = []
     best_path =[]
+    # import pdb; pdb.set_trace()
     while (curr_best_node!= None) & (curr_best_node.state != goal_state):
         g += 1
         next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
         curr_best_node = next_node
-        for node in best_path:
-            if node.g != 1:
-                if node.g >= curr_best_node.g:
-                    best_path.remove(node)
-
+        # for node in best_path:
+        #     if node.g != 1:
+        #         if node.g >= curr_best_node.g:
+        #             best_path.remove(node)
         g = curr_best_node.g
         best_path.append(curr_best_node)
     output(best_path, curr_best_node, initial_input, weight, g)
