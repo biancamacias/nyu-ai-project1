@@ -258,7 +258,7 @@ def main():
     goal_state = initial_input[4:8]
 
     # create root, then start generating graph tree
-    root = Node(weight, goal_state, curr_state, 0)
+    root = Node(weight, goal_state, curr_state, None, g)
     generated_states.append(root.state)
     # goal_reached = False
     curr_best_node = root
