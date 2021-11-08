@@ -243,7 +243,6 @@ def main():
     goal_state = [] # will hold goal state, input from input file
     generated_states = [] # list to hold states already created to prevent repeated states
     g = 0 # g(n) value, root starts at 0
-    optimal_path = [] # list of directions taken
 
     # Make a list
     for line in file:
