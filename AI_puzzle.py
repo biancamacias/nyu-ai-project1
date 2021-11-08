@@ -233,20 +233,12 @@ def main():
     generated_states.append(root.state)
     # goal_reached = False
     curr_best_node = root
-    #while (curr_best_node!= None) & (curr_best_node.state != goal_state):
-    while g < 5:
+    while (curr_best_node!= None) & (curr_best_node.state != goal_state):
         g += 1
         direction, next_node = best_move(curr_best_node, g, generated_states, goal_state)
         optimal_path.append(direction)
         curr_best_node = next_node
-        # if (curr_best_node!= None):
-        #     print("Current State: ")
-        #     for line in curr_best_node.state:
-        #         print(line)
-        #     print("f:")
-        #     print(curr_best_node.f)
-        # else:
-        #     break
+
     # while !(goal_reached):
         # g += 1
         # if curr_best_node.state == goal_state:
