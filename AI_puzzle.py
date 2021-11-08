@@ -4,16 +4,17 @@
 import copy
 
 WEIGHTS = [1.0, 1.2, 1.4]
-DIRECTIONS = ["UP", "DOWN", "LEFT", "RIGHT"]
+DIRECTIONS = ["U", "D", "L", "R"]
 
 # graph search will use this Node data structure throughout
 class Node:
-   def __init__(self, weight, goal_state, state, g = 0):
+   def __init__(self, weight, goal_state, state, direction = None, g = 0):
       self.state = state # list, current state of puzzle
       self.parent = None # None if root, must be another node otherwise
       self.weight = weight
-      # attribute that states whether node is expanded or not
-      # attributes for direction
+
+      self.direction = direction
+
       self.g = g # node level
       self.h = 0 # manhattan distances from goal state, will be 0 when goal is reached
       self.f = 0 # f(n) = weight * h(n) + g(n)
@@ -116,14 +117,15 @@ def best_node(child_nodes, unexpanded_nodes):
             node_chosen = unexpanded_node
     # If an unexpanded node value is chosen delete it from unexpanded node list
     if node_chosen in unexpanded_nodes:
-        unexpanded_nodes.delete(node_chosen)
+        unexpanded_nodes.remove(node_chosen)
     # put generated nodes not chosen in unexpanded nodes list
     for node in child_nodes:
-        if node is not node_chosen:
-            unexpanded_nodes.append(node)
+        if node[1]!= None:
+            if node[1] is not node_chosen:
+                unexpanded_nodes.append(node[1])
 
     # compare generated children's f values and unexpanded nodes f values
-    return (direction_moved, node_chosen)
+    return node_chosen
 
 def move(node, direction, g, empty_tile, goal_state):
     # TODO: helper function that takes current node and creates new node where tile moves down
@@ -159,6 +161,7 @@ def generate_children(node, g, generated_states, goal_state):
     if node.move_possible(DIRECTIONS[0], empty_tile):
         direction = (DIRECTIONS[0], row - 1)
         new_up = move(node, direction, g, empty_tile, goal_state)
+        new_up.direction = "UP"
         if new_up.state not in generated_states:
             generated_states.append(new_up.state)
         else:
@@ -193,12 +196,12 @@ def best_move(node, g, generated_states, goal_state, unexpanded_nodes):
     # returns tuple (direction taken, node with best f acc to A* search)
     child_nodes = generate_children(node, g, generated_states, goal_state)
     # [up node or None, down node or None, left node or None, right node or None]
-    for node in child_nodes:
-        print(node[0])
-        if node[1]!= None:
-            print(node[1].state)
-        else: print(None)
-        print("\n")
+    # for node in child_nodes:
+    #     print(node[0])
+    #     if node[1]!= None:
+    #         print(node[1].state)
+    #     else: print(None)
+    #     print("\n")
     return best_node(child_nodes, unexpanded_nodes)
 
 def main():
@@ -233,9 +236,10 @@ def main():
     unexpanded_nodes = []
     while (curr_best_node!= None) & (curr_best_node.state != goal_state):
         g += 1
-        direction, next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
-        optimal_path.append(direction)
+        next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
+        # optimal_path.append(direction)
         curr_best_node = next_node
+        print(curr_best_node.state)
         # create a list of unexpanded nodes to pass through
 
 
