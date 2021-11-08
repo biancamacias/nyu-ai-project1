@@ -12,7 +12,8 @@ class Node:
       self.state = state # list, current state of puzzle
       self.parent = None # None if root, must be another node otherwise
       self.weight = weight
-
+      # attribute that states whether node is expanded or not
+      # attributes for direction
       self.g = g # node level
       self.h = 0 # manhattan distances from goal state, will be 0 when goal is reached
       self.f = 0 # f(n) = weight * h(n) + g(n)
@@ -95,12 +96,12 @@ class Node:
             else: return False
 
 
-def best_node(child_nodes):
+def best_node(child_nodes, unexpanded_nodes):
     # TODO: create helper function to decide which child node is best based on f value
     # returns tuple (direction, node with lowest f value)
     min_f = -1
     direction_moved = None
-    node_choosen = None
+    node_chosen = None
     for node in child_nodes:
         direction = node[0]
         node = node[1]
@@ -108,14 +109,21 @@ def best_node(child_nodes):
             if (min_f == -1) | (node.f < min_f):
                 min_f = node.f
                 direction_moved = direction
-                node_choosen = node
-    return (direction_moved, node_choosen)
+                node_chosen = node
+    # Check if unexpanded nodes have a lower f value
+    for unexpanded_node in unexpanded_nodes:
+        if unexpanded_node.f < node_chosen.f:
+            node_chosen = unexpanded_node
+    # If an unexpanded node value is chosen delete it from unexpanded node list
+    if node_chosen in unexpanded_nodes:
+        unexpanded_nodes.delete(node_chosen)
+    # put generated nodes not chosen in unexpanded nodes list
+    for node in child_nodes:
+        if node is not node_chosen:
+            unexpanded_nodes.append(node)
 
-
-# def move_up(node, g):
-#     None
-    # TODO: helper function that takes current node and creates new node where tile moves up
-    # returns new node with node as its parent
+    # compare generated children's f values and unexpanded nodes f values
+    return (direction_moved, node_chosen)
 
 def move(node, direction, g, empty_tile, goal_state):
     # TODO: helper function that takes current node and creates new node where tile moves down
@@ -134,17 +142,6 @@ def move(node, direction, g, empty_tile, goal_state):
     new_node = Node(weight, goal_state, new_state, g)
     new_node.parent = node.state
     return new_node
-
-
-# def move_left(node, g):
-#     None
-    # TODO: helper function that takes current node and creates new node where tile moves left
-    # returns new node with node as its parent
-
-# def move_right(node, g):
-#     None
-    # TODO: helper function that takes current node and creates new node where tile moves right
-    # returns new node with node as its parent
 
 
 def generate_children(node, g, generated_states, goal_state):
@@ -189,7 +186,7 @@ def generate_children(node, g, generated_states, goal_state):
             new_right = None
     return [("UP", new_up), ("DOWN", new_down), ("LEFT", new_left), ("RIGHT", new_right)]
 
-def best_move(node, g, generated_states, goal_state):
+def best_move(node, g, generated_states, goal_state, unexpanded_nodes):
     # creates nodes if empty tile can move up, down, left, right
     # and if the node has not yet been created
     # sets child node parent to node
@@ -202,7 +199,7 @@ def best_move(node, g, generated_states, goal_state):
             print(node[1].state)
         else: print(None)
         print("\n")
-    return best_node(child_nodes)
+    return best_node(child_nodes, unexpanded_nodes)
 
 def main():
     # open the file
@@ -233,20 +230,14 @@ def main():
     generated_states.append(root.state)
     # goal_reached = False
     curr_best_node = root
+    unexpanded_nodes = []
     while (curr_best_node!= None) & (curr_best_node.state != goal_state):
         g += 1
-        direction, next_node = best_move(curr_best_node, g, generated_states, goal_state)
+        direction, next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
         optimal_path.append(direction)
         curr_best_node = next_node
+        # create a list of unexpanded nodes to pass through
 
-    # while !(goal_reached):
-        # g += 1
-        # if curr_best_node.state == goal_state:
-        #     goal_reached = True
-        # else:
-        #     direction, next_node = move(curr_best_node, g, generated_states)
-        #     optimal_path.append(direction)
-        #     curr_best_node = next_node
 
     file.close()
 
