@@ -4,7 +4,7 @@
 import copy
 
 WEIGHTS = [1.0, 1.2, 1.4]
-DIRECTIONS = ["U", "D", "L", "R"]
+DIRECTIONS = ["L", "R", "U", "D"]
 
 # graph search will use this Node data structure throughout
 class Node:
@@ -75,22 +75,22 @@ class Node:
         max_row = len(self.state)
         max_col = len(self.state[0])
 
-        if direction == "UP":
+        if direction == "U":
             up = row - 1
             if min_row < up < max_row :
                 return True
             else: return False
-        if direction == "DOWN":
+        if direction == "D":
             down = row + 1
             if min_row < down < max_row :
                 return True
             else: return False
-        if direction == "LEFT":
+        if direction == "L":
             left = col - 1
             if min_col < left < max_col :
                 return True
             else: return False
-        if direction == "RIGHT":
+        if direction == "R":
             right = col + 1
             if min_col < right < max_col :
                 return True
@@ -133,7 +133,7 @@ def move(node, direction, g, empty_tile, goal_state):
     new_state = copy.deepcopy(node.state)
     weight = node.weight
     (row, col) = empty_tile
-    if (direction[0] == "UP") | (direction[0] == "DOWN"):
+    if (direction[0] == "U") | (direction[0] == "D"):
         new_row = direction[1]
         new_state[row][col] = new_state[new_row][col]
         new_state[new_row][col] = '0'
@@ -142,7 +142,7 @@ def move(node, direction, g, empty_tile, goal_state):
         new_state[row][col] = new_state[row][new_col]
         new_state[row][new_col] = '0'
     new_node = Node(weight, goal_state, new_state, g)
-    new_node.parent = node.state
+    new_node.parent = node
     return new_node
 
 
@@ -159,35 +159,38 @@ def generate_children(node, g, generated_states, goal_state):
     empty_tile = node.find_empty_tile()
     (row, col) = empty_tile
     if node.move_possible(DIRECTIONS[0], empty_tile):
-        direction = (DIRECTIONS[0], row - 1)
-        new_up = move(node, direction, g, empty_tile, goal_state)
-        new_up.direction = "UP"
-        if new_up.state not in generated_states:
-            generated_states.append(new_up.state)
-        else:
-            new_up = None
-    if node.move_possible(DIRECTIONS[1], empty_tile):
-        direction = (DIRECTIONS[1], row + 1)
-        new_down = move(node, direction, g, empty_tile, goal_state)
-        if new_down.state not in generated_states:
-            generated_states.append(new_down.state)
-        else:
-            new_down = None
-    if node.move_possible(DIRECTIONS[2], empty_tile):
-        direction = (DIRECTIONS[2], col - 1)
+        direction = (DIRECTIONS[0], col - 1)
         new_left = move(node, direction, g, empty_tile, goal_state)
+        new_left.direction = DIRECTIONS[0]
         if new_left.state not in generated_states:
             generated_states.append(new_left.state)
         else:
             new_left = None
-    if node.move_possible(DIRECTIONS[3], empty_tile):
-        direction = (DIRECTIONS[3], col + 1)
+    if node.move_possible(DIRECTIONS[1], empty_tile):
+        direction = (DIRECTIONS[1], col + 1)
         new_right = move(node, direction, g, empty_tile, goal_state)
+        new_right.direction = DIRECTIONS[1]
         if new_right.state not in generated_states:
             generated_states.append(new_right.state)
         else:
             new_right = None
-    return [("UP", new_up), ("DOWN", new_down), ("LEFT", new_left), ("RIGHT", new_right)]
+    if node.move_possible(DIRECTIONS[2], empty_tile):
+        direction = (DIRECTIONS[2], row - 1)
+        new_up = move(node, direction, g, empty_tile, goal_state)
+        new_up.direction = DIRECTIONS[2]
+        if new_up.state not in generated_states:
+            generated_states.append(new_up.state)
+        else:
+            new_up = None
+    if node.move_possible(DIRECTIONS[3], empty_tile):
+        direction = (DIRECTIONS[3], row + 1)
+        new_down = move(node, direction, g, empty_tile, goal_state)
+        new_down.direction = DIRECTIONS[3]
+        if new_down.state not in generated_states:
+            generated_states.append(new_down.state)
+        else:
+            new_down = None
+    return [("L", new_left), ("R", new_right), ("U", new_up), ("D", new_down)]
 
 def best_move(node, g, generated_states, goal_state, unexpanded_nodes):
     # creates nodes if empty tile can move up, down, left, right
@@ -204,13 +207,33 @@ def best_move(node, g, generated_states, goal_state, unexpanded_nodes):
     #     print("\n")
     return best_node(child_nodes, unexpanded_nodes)
 
+def output(best_path, initial_input, weight, g):
+    for line in initial_input:
+        for elem in line:
+            print(elem, end=" ")
+        print()
+    print()
+    print(weight)
+    print(g)
+    print("N")
+    for node in best_path:
+        print(node.direction, end=" ")
+    print()
+    for node in best_path:
+        print(node.f, end=" ")
+
+
+
+
+
+
 def main():
     # open the file
     file = open("input1.txt", "r")
     weight = WEIGHTS[1] # TODO: change this
 
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
-    initial_state = [] # initial state of puzzle
+    initial_input = [] # initial state of puzzle
     goal_state = [] # will hold goal state, input from input file
     generated_states = [] # list to hold states already created to prevent repeated states
     g = 0 # g(n) value, root starts at 0
@@ -220,13 +243,13 @@ def main():
     for line in file:
         line = line.strip()
         line = line.split(' ')
-        initial_state.append(line)
+        initial_input.append(line)
 
     # current state
-    curr_state = initial_state[0:3]
+    curr_state = initial_input[0:3]
 
     # goal state
-    goal_state = initial_state[4:8]
+    goal_state = initial_input[4:8]
 
     # create root, then start generating graph tree
     root = Node(weight, goal_state, curr_state, 0)
@@ -234,13 +257,14 @@ def main():
     # goal_reached = False
     curr_best_node = root
     unexpanded_nodes = []
+    best_path =[]
     while (curr_best_node!= None) & (curr_best_node.state != goal_state):
         g += 1
         next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
         # optimal_path.append(direction)
         curr_best_node = next_node
-        print(curr_best_node.state)
-        # create a list of unexpanded nodes to pass through
+        best_path.append(curr_best_node)
+    output(best_path, initial_input, weight, g)
 
 
     file.close()
