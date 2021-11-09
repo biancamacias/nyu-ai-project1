@@ -3,22 +3,22 @@
 # ijh234, bm2815
 import copy
 
-# Node is a unique tile arrangement that hold state, parent node, weight,
+# Node is a unique tile arrangement that holds state, parent node, weight,
 # direction taken to get to the tile arrangement, g, h, and f
 class Node:
     def __init__(self, weight, goal_state, state, direction = None, g = 0):
         self.state = state # list, current state of puzzle
-        self.parent = None # None if root, must be another node otherwise
-        self.weight = weight
+        self.parent = None # None if root, another Node otherwise
+        self.weight = weight # weight (integer) inputted by user
 
         self.direction = direction # "L", "R", "U", or "D"
 
         self.g = g # node level
-        self.h = 0 # manhattan distances from goal state, will be 0 when goal is reached
+        self.h = 0 # manhattan distances from goal state, 0 when goal is reached
         self.f = 0 # f(n) = weight * h(n) + g(n)
 
-        self.calculate_h(goal_state) # call function to calculate h
-        self.calculate_f(weight) # call function to calculate f
+        self.calculate_h(goal_state) # call function to set h
+        self.calculate_f(weight) # call function to set f
 
     # Method to calculate manhattan distances of the current tile
     # Takes in the goal position and the current position
@@ -27,14 +27,14 @@ class Node:
         return abs(goal_row - curr_row) + abs(goal_column - curr_column)
 
     # Method that finds row, column of element in the current state
-    # returns tuple of its location (row, column)
-    def find_element(self, goal_element):
+    # returns tuple of its location as indices (row, column)
+    def find_element(self, element_to_find):
         for row in self.state:
             for element in row:
-                if element == goal_element:
-                    row_index = self.state.index(row)
-                    col_index = row.index(element)
-                    return row_index, col_index
+                if element == element_to_find:
+                    curr_row = self.state.index(row)
+                    curr_col = row.index(element)
+                    return curr_row, curr_col
 
     # Method calculates manhattan distances of current state from goal state
     # sets h attribute
@@ -49,7 +49,7 @@ class Node:
 
     # Method calculates and sets f attribute
     def calculate_f(self, weight):
-        self.f = round((weight* self.h + self.g) , 1)
+        self.f = round((weight* self.h + self.g), 1)
 
     # Method to find empty tile position
     # returns tuple (row, column)
@@ -59,30 +59,29 @@ class Node:
                if element == '0':
                    col = row.index('0')
                    row = self.state.index(row)
-                   return(row, col)
+                   return row, col
 
     # Method that checks if empty tile can move in given direction
     # returns True or False if tile can move in that direction
     def move_possible(self, direction, d_index, empty_tile):
-        (row,col) = empty_tile
+        row, col = empty_tile
         min_row = -1
         min_col = -1
         max_row = len(self.state)
         max_col = len(self.state[0])
 
         if (direction == "U") | (direction == "D"):
-            if min_row < d_index < max_row :
+            if min_row < d_index < max_row:
                 return True
             else: return False
         if (direction == "L") | (direction == "R"):
-            if min_col < d_index < max_col :
+            if min_col < d_index < max_col:
                 return True
             else: return False
 
-
 # Helper function to decide which child node is best based on f value
 # The node is best if it has the lowest f value out of all the unexpanded nodes
-# returns tuple (direction, node with lowest f value)
+# returns tuple (direction, Node with lowest f value)
 def best_node(child_nodes, frontier):
     min_f = -1
     direction_moved = None
@@ -97,16 +96,16 @@ def best_node(child_nodes, frontier):
                 node_chosen = node
     # Check if unexpanded nodes have a lower f value
     # Iterate through the reverse of the unepanded_nodes list
-    # because A* weighted search has a LIFO Frontier
+    # because A* search has a LIFO Frontier
     for leaf_node in reversed(frontier):
         if leaf_node.f < node_chosen.f:
             if leaf_node.g < node_chosen.g:
                 node_chosen = leaf_node
-    # If an unexpanded node value is chosen delete it from unexpanded_nodes list
-    # because it will now be expanded
+    # If an unexpanded node value is chosen, delete it from frontier
+    # because it will now be an expanded node
     if node_chosen in frontier:
         frontier.remove(node_chosen)
-    # Put generated nodes not chosen into unexpanded_nodes list (Frontier)
+    # Put generated nodes not chosen into frontier
     for node in child_nodes:
         if node[1]!= None:
             if node[1] is not node_chosen:
@@ -171,7 +170,6 @@ def generate_children(node, g, generated_states, goal_state):
         new_down = create_node(node, direction, g, empty_tile, goal_state, generated_states)
     return [("L", new_left), ("R", new_right), ("U", new_up), ("D", new_down)]
 
-
 # Function that creates nodes if empty tile can move up, down, left, right
 # and if the node has not yet been created
 # sets child node parent to node
@@ -198,7 +196,6 @@ def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
     for node in best_path:
         print(node.f, end=" ")
     print()
-
 
 def main():
     # Ask for input to obtain filename
