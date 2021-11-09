@@ -131,6 +131,16 @@ def move(node, direction, g, empty_tile, goal_state):
     new_node.parent = node
     return new_node
 
+# Helper function to create a new node based on a direction
+# Returns a new Node object
+def create_node(node, direction, g, empty_tile, goal_state, generated_states):
+    new_node = move(node, direction, g, empty_tile, goal_state)
+    new_node.direction = direction[0]
+    if new_node.state not in generated_states:
+        generated_states.append(new_node.state)
+    else:
+        new_node = None
+    return new_node
 
 # Helper function that generates valid children based on directions they can move in
 # if new child state has already been generated before, skip it (no repeated states allowed)
@@ -138,65 +148,36 @@ def move(node, direction, g, empty_tile, goal_state):
 # returns children list
 # value of children will be None if direction is not allowed
 def generate_children(node, g, generated_states, goal_state):
-    new_up = None
-    new_down = None
-    new_left = None
-    new_right = None
+    new_left, new_right, new_up, new_down = None, None, None, None
     empty_tile = node.find_empty_tile()
     (row, col) = empty_tile
-    left_index = col - 1
-    right_index = col + 1
-    up_index = row - 1
-    down_index = row + 1
+    left_index, right_index = col - 1, col + 1
+    up_index, down_index = row - 1, row + 1
     if node.move_possible("L", left_index, empty_tile):
         direction = ("L", left_index)
-        new_left = move(node, direction, g, empty_tile, goal_state)
-        new_left.direction = "L"
-        if new_left.state not in generated_states:
-            generated_states.append(new_left.state)
-        else:
-            new_left = None
+        new_left = create_node(node, direction, g, empty_tile, goal_state, generated_states)
     if node.move_possible("R", right_index, empty_tile):
         direction = ("R", right_index)
-        new_right = move(node, direction, g, empty_tile, goal_state)
-        new_right.direction = "R"
-        if new_right.state not in generated_states:
-            generated_states.append(new_right.state)
-        else:
-            new_right = None
+        new_right = create_node(node, direction, g, empty_tile, goal_state, generated_states)
     if node.move_possible("U", up_index, empty_tile):
         direction = ("U", up_index)
-        new_up = move(node, direction, g, empty_tile, goal_state)
-        new_up.direction = "U"
-        if new_up.state not in generated_states:
-            generated_states.append(new_up.state)
-        else:
-            new_up = None
+        new_up = create_node(node, direction, g, empty_tile, goal_state, generated_states)
     if node.move_possible("D", down_index, empty_tile):
         direction = ("D", down_index)
-        new_down = move(node, direction, g, empty_tile, goal_state)
-        new_down.direction = "D"
-        if new_down.state not in generated_states:
-            generated_states.append(new_down.state)
-        else:
-            new_down = None
+        new_down = create_node(node, direction, g, empty_tile, goal_state, generated_states)
     return [("L", new_left), ("R", new_right), ("U", new_up), ("D", new_down)]
 
-def best_move(node, g, generated_states, goal_state, unexpanded_nodes):
-    # creates nodes if empty tile can move up, down, left, right
-    # and if the node has not yet been created
-    # sets child node parent to node
-    # returns tuple (direction taken, node with best f acc to A* search)
-    child_nodes = generate_children(node, g, generated_states, goal_state)
-    # [up node or None, down node or None, left node or None, right node or None]
-    # for node in child_nodes:
-    #     print(node[0])
-    #     if node[1]!= None:
-    #         print(node[1].state)
-    #     else: print(None)
-    #     print("\n")
-    return best_node(child_nodes, unexpanded_nodes)
 
+# Function that creates nodes if empty tile can move up, down, left, right
+# and if the node has not yet been created
+# sets child node parent to node
+# returns the next node to be expanded
+def best_move(node, g, generated_states, goal_state, frontier):
+    child_nodes = generate_children(node, g, generated_states, goal_state)
+    # [("L", Node or None), ("R", Node or None), ("U", Node or None), ("D", Node or None)]
+    return best_node(child_nodes, frontier)
+
+# Print output in the correct format
 def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
     for line in initial_input:
         for elem in line:
@@ -211,69 +192,66 @@ def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
     print()
     for node in best_path:
         print(node.f, end=" ")
-    print()
-    for node in best_path:
-        print(node.state, end=" ")
-        print(node.g, end=" ")
-        print(node.f)
-
-
-
-
 
 
 def main():
+    # Ask for input to obtain filename
+    filename = input("Enter the name of the input file: ")
     # open the file
-    file = open("Sample_Input.txt", "r") # TODO: make this input
+    file = open(filename, "r")
+    # Ask for input to obtain weighted value
     weight = float(input("Enter the weight (W) for the heuristic function: "))
 
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
-    initial_input = [] # initial state of puzzle
-    goal_state = [] # will hold goal state, input from input file
+    initial_input = [] # input in list format
     generated_states = [] # list to hold states already created to prevent repeated states
+    frontier = [] # initialize empty list for LIFO frontier
+    best_path =[] # intialize empty list to store best node path
     g = 0 # g(n) value, root starts at 0
 
-    # Make a list
+    # Make a list of the initial input from the input file
     for line in file:
         line = line.strip()
         line = line.split(' ')
         initial_input.append(line)
 
+    # Seperate initial input into the initial state and the goal state
     # current state
     curr_state = initial_input[0:3]
-
     # goal state
     goal_state = initial_input[4:8]
 
-    # create root, then start generating graph tree
+    # create root Node and add Node to generated states
     root = Node(weight, goal_state, curr_state, None, g)
     generated_states.append(root.state)
-    # goal_reached = False
+
+    # initialize Node pointer
     curr_best_node = root
-    unexpanded_nodes = []
-    best_path =[]
-    # import pdb; pdb.set_trace()
-    while (curr_best_node!= None) & (curr_best_node.state != goal_state):
+
+    # while the current state does not equal the goal state, traverse graph
+    while (curr_best_node.state != goal_state):
         g += 1
-        next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
+        next_node = best_move(curr_best_node, g, generated_states, goal_state, frontier)
         curr_best_node = next_node
-        # for node in best_path:
-        #     # if node.g != 1:
-        #     if node.g >= curr_best_node.g:
-        #         best_path.remove(node)
         g = curr_best_node.g
-        # best_path.append(curr_best_node)
-    point_node = copy.deepcopy(curr_best_node)
-    new_list = []
-    while (point_node.state != root.state):
-        if point_node!= None:
-            new_list.append(point_node)
-            point_node = point_node.parent
-    for elem in reversed(new_list):
-        best_path.append(elem)
+    # goal_node is a copy of curr_best_node
+    goal_node = copy.deepcopy(curr_best_node)
+    best_path = [] #intiialize best_path empty list
+    # while final state is not equal to root state
+    # find the correct parent node of the current nodes
+    # and append it to best_path list to get the correct
+    # reversed node path
+    while (goal_node.state != root.state):
+        if goal_node!= None:
+            best_path.append(goal_node)
+            goal_node = goal_node.parent
+    # reverse the list of nodes representing the best node path in order to
+    # have the correct order from root to goal node
+    best_path.reverse()
+    # call output to print the results in the correct format
     output(best_path, curr_best_node, initial_input, weight, g, len(generated_states))
 
-
+    # close the file used
     file.close()
 
 if __name__ == '__main__':
