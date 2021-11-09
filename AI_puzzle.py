@@ -191,10 +191,10 @@ def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
     print(curr_best_node.g)
     print(num_nodes)
     for node in best_path:
-        print(node.direction, end=" ")
+        print(node.direction, end = " ")
     print()
     for node in best_path:
-        print(node.f, end=" ")
+        print(node.f, end = " ")
     print()
 
 def main():
