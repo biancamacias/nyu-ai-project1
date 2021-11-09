@@ -1,4 +1,4 @@
-# artificial intelligence project 1
+# cs-uy 4613 artificial intelligence project 1
 # Isabel Huey, Bianca Macias
 # ijh234, bm2815
 import copy
