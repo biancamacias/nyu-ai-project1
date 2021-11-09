@@ -87,7 +87,7 @@ def best_node(child_nodes, frontier):
     min_f = -1
     direction_moved = None
     node_chosen = None
-    for node in child_nodes:
+    for node in child_nodes: # node = (direction (string), Node or none)
         direction = node[0]
         node = node[1]
         if node!=None:
@@ -113,8 +113,9 @@ def best_node(child_nodes, frontier):
                 frontier.append(node[1])
     return node_chosen
 
-# Helper function that takes current node, direction, g, empty_tile position, and goal_state
-# and moves the empty tile accordingly
+# Helper function that takes current node, direction, g, empty_tile position,
+# and goal_state
+# moves the empty tile accordingly
 # It then returns a new node with the current node as its parent
 def move(node, direction, g, empty_tile, goal_state):
     new_state = copy.deepcopy(node.state)
@@ -143,8 +144,10 @@ def create_node(node, direction, g, empty_tile, goal_state, generated_states):
         new_node = None
     return new_node
 
-# Helper function that generates valid children based on directions they can move in
-# if new child state has already been generated before, skip it (no repeated states allowed)
+# Helper function that generates valid children based on directions
+# they can move in
+# if new child state has already been generated before,
+# skip it (no repeated states allowed)
 # if not, add to generated_states and children list
 # returns children list
 # value of children will be None if direction is not allowed
@@ -175,7 +178,8 @@ def generate_children(node, g, generated_states, goal_state):
 # returns the next node to be expanded
 def best_move(node, g, generated_states, goal_state, frontier):
     child_nodes = generate_children(node, g, generated_states, goal_state)
-    # [("L", Node or None), ("R", Node or None), ("U", Node or None), ("D", Node or None)]
+    # [("L", Node or None), ("R", Node or None),
+    #  ("U", Node or None), ("D", Node or None)]
     return best_node(child_nodes, frontier)
 
 # Print output in the correct format
@@ -205,7 +209,7 @@ def main():
 
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
     initial_input = [] # input in list format
-    generated_states = [] # list to hold states already created to prevent repeated states
+    generated_states = [] # list to hold states created to prevent repeated states
     frontier = [] # initialize empty list for LIFO frontier
     best_path =[] # intialize empty list to store best node path
     g = 0 # g(n) value, root starts at 0
