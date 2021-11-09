@@ -197,6 +197,7 @@ def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
     print()
     for node in best_path:
         print(node.f, end=" ")
+    print()
 
 
 def main():
