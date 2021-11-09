@@ -47,8 +47,9 @@ class Node:
 
    def calculate_f(self, weight):
         # calculates and sets f value
-        # self.f = weight * self.h + self.g
-        self.f = self.h + self.g
+        self.f = round((weight* self.h + self.g) , 1)
+
+
 
 
 
@@ -239,7 +240,7 @@ def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
 
 def main():
     # open the file
-    file = open("input1.txt", "r") # TODO: make this input
+    file = open("Sample_Input.txt", "r") # TODO: make this input
     weight = float(input("Enter the weight (W) for the heuristic function: "))
 
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
@@ -272,12 +273,20 @@ def main():
         g += 1
         next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
         curr_best_node = next_node
-        for node in best_path:
-            # if node.g != 1:
-            if node.g >= curr_best_node.g:
-                best_path.remove(node)
+        # for node in best_path:
+        #     # if node.g != 1:
+        #     if node.g >= curr_best_node.g:
+        #         best_path.remove(node)
         g = curr_best_node.g
-        best_path.append(curr_best_node)
+        # best_path.append(curr_best_node)
+    point_node = copy.deepcopy(curr_best_node)
+    new_list = []
+    while (point_node.state != root.state):
+        if point_node!= None:
+            new_list.append(point_node)
+            point_node = point_node.parent
+    for elem in reversed(new_list):
+        best_path.append(elem)
     output(best_path, curr_best_node, initial_input, weight, g, len(generated_states))
 
 
