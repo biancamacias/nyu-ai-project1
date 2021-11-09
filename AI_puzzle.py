@@ -95,8 +95,8 @@ def best_node(child_nodes, frontier):
                 direction_moved = direction
                 node_chosen = node
     # Check if unexpanded nodes have a lower f value
-    # Iterate through the reverse of the unepanded_nodes list
-    # because A* search has a LIFO Frontier
+    # Iterate through the reverse of the frontier
+    # because A* search has a LIFO frontier
     for leaf_node in reversed(frontier):
         if leaf_node.f < node_chosen.f:
             if leaf_node.g < node_chosen.g:
