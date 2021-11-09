@@ -206,7 +206,7 @@ def main():
             file = open(filename, "r")
         except FileNotFoundError:
             print("File not found, try again")
-    # Ask for input to obtain weighted value
+    # Ask for input to obtain weight value
     weight = float(input("Enter the weight (W) for the heuristic function: "))
 
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
