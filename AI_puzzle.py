@@ -96,10 +96,10 @@ class Node:
                 return True
             else: return False
 
-
 def best_node(child_nodes, unexpanded_nodes):
     # TODO: create helper function to decide which child node is best based on f value
     # returns tuple (direction, node with lowest f value)
+    # import pdb; pdb.set_trace()
     min_f = -1
     direction_moved = None
     node_chosen = None
@@ -112,10 +112,14 @@ def best_node(child_nodes, unexpanded_nodes):
                 direction_moved = direction
                 node_chosen = node
     # Check if unexpanded nodes have a lower f value
-    for unexpanded_node in unexpanded_nodes:
+    for unexpanded_node in reversed(unexpanded_nodes):
         if unexpanded_node.f < node_chosen.f:
             if unexpanded_node.g < node_chosen.g:
                 node_chosen = unexpanded_node
+    # for unexpanded_node in unexpanded_nodes:
+    #     if unexpanded_node.f < node_chosen.f:
+    #         if unexpanded_node.g < node_chosen.g:
+    #             node_chosen = unexpanded_node
     # If an unexpanded node value is chosen delete it from unexpanded node list
     if node_chosen in unexpanded_nodes:
         unexpanded_nodes.remove(node_chosen)
@@ -208,15 +212,15 @@ def best_move(node, g, generated_states, goal_state, unexpanded_nodes):
     #     print("\n")
     return best_node(child_nodes, unexpanded_nodes)
 
-def output(best_path, curr_best_node, initial_input, weight, g):
+def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
     for line in initial_input:
         for elem in line:
-            print(elem, end=" ")
+            print(elem, end = " ")
         print()
     print()
     print(weight)
     print(curr_best_node.g)
-    print("N")
+    print(num_nodes)
     for node in best_path:
         print(node.direction, end=" ")
     print()
@@ -235,8 +239,8 @@ def output(best_path, curr_best_node, initial_input, weight, g):
 
 def main():
     # open the file
-    file = open("Sample_Input.txt", "r")
-    weight = WEIGHTS[0] # TODO: change this
+    file = open("input1.txt", "r") # TODO: make this input
+    weight = float(input("Enter the weight (W) for the heuristic function: "))
 
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
     initial_input = [] # initial state of puzzle
@@ -268,13 +272,13 @@ def main():
         g += 1
         next_node = best_move(curr_best_node, g, generated_states, goal_state, unexpanded_nodes)
         curr_best_node = next_node
-        # for node in best_path:
-        #     if node.g != 1:
-        #         if node.g >= curr_best_node.g:
-        #             best_path.remove(node)
+        for node in best_path:
+            # if node.g != 1:
+            if node.g >= curr_best_node.g:
+                best_path.remove(node)
         g = curr_best_node.g
         best_path.append(curr_best_node)
-    output(best_path, curr_best_node, initial_input, weight, g)
+    output(best_path, curr_best_node, initial_input, weight, g, len(generated_states))
 
 
     file.close()
