@@ -43,7 +43,8 @@ class Node:
         for goal_row in goal_state:
             for goal_element in goal_row:
                 curr_row, curr_column = self.find_element(goal_element)
-                total += self.manhattan_distance(goal_state.index(goal_row), goal_row.index(goal_element), curr_row, curr_column)
+                total += self.manhattan_distance(goal_state.index(goal_row), \
+                         goal_row.index(goal_element), curr_row, curr_column)
         self.h = total
 
     # Method calculates and sets f attribute
