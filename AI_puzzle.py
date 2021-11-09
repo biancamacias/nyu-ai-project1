@@ -89,7 +89,7 @@ def best_node(child_nodes, frontier):
     for node in child_nodes: # node = (direction (string), Node or none)
         direction = node[0]
         node = node[1]
-        if node!=None:
+        if node != None:
             if (min_f == -1) | (node.f < min_f):
                 min_f = node.f
                 direction_moved = direction
@@ -107,7 +107,7 @@ def best_node(child_nodes, frontier):
         frontier.remove(node_chosen)
     # Put generated nodes not chosen into frontier
     for node in child_nodes:
-        if node[1]!= None:
+        if node[1] != None:
             if node[1] is not node_chosen:
                 frontier.append(node[1])
     return node_chosen
@@ -115,11 +115,11 @@ def best_node(child_nodes, frontier):
 # Helper function that takes current node, direction, g, empty_tile position,
 # and goal_state
 # moves the empty tile accordingly
-# It then returns a new node with the current node as its parent
+# returns a new Node with the current node as its parent
 def move(node, direction, g, empty_tile, goal_state):
     new_state = copy.deepcopy(node.state)
     weight = node.weight
-    (row, col) = empty_tile
+    row, col = empty_tile
     if (direction[0] == "U") | (direction[0] == "D"):
         new_row = direction[1]
         new_state[row][col] = new_state[new_row][col]
@@ -198,10 +198,14 @@ def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
     print()
 
 def main():
-    # Ask for input to obtain filename
-    filename = input("Enter the name of the input file: ")
-    # open the file
-    file = open(filename, "r")
+    # Ask for input to obtain filename and try to open the file
+    file = None
+    while file == None:
+        filename = input("Enter the name of the input file: ")
+        try:
+            file = open(filename, "r")
+        except FileNotFoundError:
+            print("File not found, try again")
     # Ask for input to obtain weighted value
     weight = float(input("Enter the weight (W) for the heuristic function: "))
 
