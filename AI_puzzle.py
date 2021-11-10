@@ -180,22 +180,25 @@ def best_move(node, g, generated_states, goal_state, frontier):
     #  ("U", Node or None), ("D", Node or None)]
     return best_node(child_nodes, frontier)
 
-# Print output in the correct format
-def output(best_path, curr_best_node, initial_input, weight, g, num_nodes):
+# Write output in the correct format to output file
+def output(filename, best_path, curr_best_node, initial_input, weight, g, num_nodes):
+    output_file = open(filename, "w")
     for line in initial_input:
         for elem in line:
-            print(elem, end = " ")
-        print()
-    print()
-    print(weight)
-    print(curr_best_node.g)
-    print(num_nodes)
+            print(elem, end = " ", file = output_file)
+        print(file = output_file)
+    print(file = output_file)
+    print(weight, file = output_file)
+    print(curr_best_node.g, file = output_file)
+    print(num_nodes, file = output_file)
     for node in best_path:
-        print(node.direction, end = " ")
-    print()
+        print(node.direction, end = " ", file = output_file)
+    print(file = output_file)
     for node in best_path:
-        print(node.f, end = " ")
-    print()
+        print(node.f, end = " ", file = output_file)
+    print(file = output_file)
+
+    output_file.close()
 
 def main():
     # Ask for input to obtain filename and try to open the file
@@ -208,6 +211,7 @@ def main():
             print("File not found, try again")
     # Ask for input to obtain weight value
     weight = float(input("Enter the weight (W) for the heuristic function: "))
+
 
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
     initial_input = [] # input in list format
@@ -255,8 +259,9 @@ def main():
     # reverse the list of nodes representing the best node path in order to
     # have the correct order from root to goal node
     best_path.reverse()
-    # call output to print the results in the correct format
-    output(best_path, curr_best_node, initial_input, weight, g, len(generated_states))
+    # ask user to input output filename to print write results to it
+    output_filename = input("Enter a name for the output file: ")
+    output(output_filename, best_path, curr_best_node, initial_input, weight, g, len(generated_states))
 
     # close the file used
     file.close()
