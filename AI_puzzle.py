@@ -259,7 +259,7 @@ def main():
     # reverse the list of nodes representing the best node path in order to
     # have the correct order from root to goal node
     best_path.reverse()
-    # ask user to input output filename to print write results to it
+    # ask user to input output filename to write results to it
     output_filename = input("Enter a name for the output file: ")
     output(output_filename, best_path, curr_best_node, initial_input, weight, g, len(generated_states))
 
