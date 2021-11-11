@@ -213,7 +213,6 @@ def main():
     # Ask for input to obtain weight value
     weight = float(input("Enter the weight (W) for the heuristic function: "))
 
-
     # puzzle state data structure: [[row 1], [row 2], [row 3]]
     initial_input = [] # input in list format
     generated_states = [] # list to hold states created to prevent repeated states
